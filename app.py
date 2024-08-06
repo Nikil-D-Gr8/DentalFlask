@@ -13,8 +13,8 @@ from flask_cors import CORS
 aai.settings.api_key = "62acec891bb04c339ec059b738bedac6"
 
 # Hugging Face model API details
-API_URL = "https://api-inference.huggingface.co/models/distilbert/distilbert-base-cased-distilled-squad"
-HEADERS = {"Authorization": "Bearer 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"}
+API_URL = ""
+HEADERS = {"Authorization": ""}
 
 questions = [
     "Which grade is the patient studying?",
