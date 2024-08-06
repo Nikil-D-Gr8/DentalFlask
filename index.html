@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental Checkup Information</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dental Checkup Information</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Grade</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>School name and place</th>
+                <th>Guardian/Parents name</th>
+                <th>Chief complaint</th>
+                <th>Medical history</th>
+                <th>Medication history</th>
+                <th>Previous dental visit</th>
+                <th>Habits</th>
+                <th>Brushing habit</th>
+                <th>Bleeding gums</th>
+                <th>Early Childhood caries</th>
+                <th>Decayed</th>
+                <th>Fractured teeth</th>
+                <th>Preshedding mobility</th>
+                <th>Malocclusion</th>
+                <th>Does the child have pain, swelling or abscess? (Urgent care need)</th>
+                <th>Any other finding</th>
+                <th>Treatment plan</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <tr id="data-row">
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button id="submit-button">Submit</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const url = 'http://localhost:5000/answer';
+            const audioFilePath = 'audio01.wav';
+
+            fetch(audioFilePath)
+                .then(response => response.blob())
+                .then(blob => {
+                    const formData = new FormData();
+                    formData.append('file', blob, audioFilePath);
+
+                    return fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        const answers = data[0]; // Assuming only one row of data is returned
+
+                        const dataRow = document.getElementById('data-row');
+                        const cells = dataRow.getElementsByTagName('td');
+                        for (let i = 0; i < answers.length; i++) {
+                            cells[i].textContent = answers[i]; // Fill the table cells with data
+                        }
+                    } else {
+                        console.error('No data found in server response.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`Request failed: ${error.message}`);
+                });
+
+            const submitButton = document.getElementById('submit-button');
+            submitButton.addEventListener('click', () => {
+                const dataRow = document.getElementById('data-row');
+                const cells = dataRow.getElementsByTagName('td');
+
+                // Convert table cell data to an array
+                const updatedData = [];
+                for (let cell of cells) {
+                    updatedData.push(cell.textContent.trim());
+                }
+
+                // Prepare the data to be sent back to the server
+                const formData = new FormData();
+                formData.append('answers', JSON.stringify(updatedData));
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data); // Display response message
+
+                    // Disable contenteditable after saving
+                    for (let cell of cells) {
+                        cell.contentEditable = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`Request failed: ${error.message}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
