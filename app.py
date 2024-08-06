@@ -10,7 +10,7 @@ from flask_cors import CORS
 
 
 # AssemblyAI API key
-aai.settings.api_key = "62acec891bb04c339ec059b738bedac6"
+aai.settings.api_key = ""
 
 # Hugging Face model API details
 API_URL = ""
